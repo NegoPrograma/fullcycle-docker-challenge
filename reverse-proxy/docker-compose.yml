@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  
+  node_fullcycle:
+    container_name: node_fullcycle
+    entrypoint: /bin/sh /usr/src/app/entrypoint.sh
+    build:
+      context: ./node
+    ports:
+      - 3000
+    volumes:
+      - ./node:/usr/src/app
+    networks:
+      - fullcycle
+
+  
+  nginx_fullcycle:
+    container_name: nginx_fullcycle
+    build:
+      context: ./nginx
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 8080:80
+    networks:
+      - fullcycle
+
+  mysql_fullcycle:
+    container_name: mysql_fullcycle
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: nodedb
+    volumes:
+      - ./mysql:/var/lib/mysql
+    ports:
+      - 3306:3306
+    networks:
+      - fullcycle
+
+networks:
+  fullcycle:
+    driver: bridge
+
